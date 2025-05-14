@@ -1,0 +1,752 @@
+  /*
+  ================================================================================
+  Organización General del CSS:
+  1. Variables Globales y Modo Oscuro: Definición de paletas de colores.
+  2. Reset y Estilos Base: Estilos generales para `body`, contenedores, etc.
+     (Mobile First).
+  3. Componentes Específicos:
+     - Modal
+     - Tarjetas "About Me" (.container-about-me, .card)
+     - Efectos de Imagen (.img-hover)
+     - Animación "Muñeco" (#muneco-animacion)
+     - Títulos con Subrayado Hover (.hover-underline, .titulo-tipo-letra)
+     - Iconos de Redes Sociales (.icon-cover-social-network)
+     - Cubo Giratorio de Destrezas (.contenedor-destrezas, .box-card)
+  4. Media Queries (Diseño Adaptativo): Ajustes para pantallas más grandes.
+
+  Correcciones y Sugerencias Aplicadas:
+  - Eliminados espacios en blanco extraños (parecían non-breaking spaces).
+  - `.container-about-me`: Cambiado `width` fijo a `max-width` para mejor responsividad.
+  - `.card`: Cambiado `width` fijo a `width: 100%` para que se adapte a su contenedor grid.
+  - `.card .cara .cara2 h2`: Corregido selector CSS (era `.card .cara .cara2 h2`, ahora es `.card .cara.cara2 h2`).
+  - Se han añadido comentarios explicativos detallados para cada sección y regla importante.
+  - Se han señalado los colores "hardcodeados" que podrían beneficiarse de variables CSS si necesitas que cambien con el tema.
+  ================================================================================
+*/
+
+/* ================================
+   1. Variables Globales y Modo Oscuro
+   ===================================
+   Define variables CSS para colores, facilitando la consistencia y el cambio de tema.
+   La media query `prefers-color-scheme: dark` permite adaptar los colores
+   automáticamente si el sistema operativo del usuario está en modo oscuro.
+*/
+:root {
+  --bg-color: #f9f9f9; /* Color de fondo principal (claro) */
+  --text-color: #000000; /* Color de texto principal (claro) */
+  --highlight-color: #d6b98c; /* Color de realce (claro) */
+  --highlight-hover: #b89d70; /* Color de realce al pasar el ratón (claro) */
+  --box-bg: #c1bda8; /* Fondo para cajas/elementos (claro) */
+  --box-border: #646cff; /* Borde para cajas/elementos (claro) */
+
+  /* Sugerencia: Podrías añadir variables para colores que se repiten y no están aquí,
+     por ejemplo, para los fondos de las tarjetas o el color del modal, si necesitas
+     que cambien con el tema. */
+  --card-bg-light: #fff; /* Ejemplo de variable para fondo de tarjeta en modo claro */
+  --modal-text-color: #000; /* Ejemplo para el color de texto del modal */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+      --bg-color: #121212; /* Color de fondo principal (oscuro) */
+      --text-color: #f1f1f1; /* Color de texto principal (oscuro) */
+      --highlight-color: #f1f1f1; /* Color de realce (oscuro) */
+      --highlight-hover: #c1a46e; /* Color de realce al pasar el ratón (oscuro) */
+      --box-bg: #2c2c2c; /* Fondo para cajas/elementos (oscuro) */
+      --box-border: #bbbbff; /* Borde para cajas/elementos (oscuro) */
+      --swingColor: #f1f1f1;
+      --swingBorderColor: #f1f1f1;
+      /* --card-bg-light: #333;  Si quisieras que el fondo de la tarjeta cambie en modo oscuro */
+      /* --modal-text-color: #f1f1f1; Si el texto del modal necesitara cambiar */
+  }
+}
+
+/* ================================
+ 2. Reset y Estilos Base (Mobile First)
+ ===================================
+ Estilos fundamentales aplicados al `body` y contenedores comunes.
+ Diseñados primero para móviles y luego adaptados para pantallas más grandes.
+*/
+body {
+  margin: 0; /* Elimina el margen por defecto del navegador */
+  padding: 0; /* Elimina el padding por defecto del navegador */
+  background: var(--bg-color); /* Aplica el color de fondo usando la variable */
+  color: var(--text-color); /* Aplica el color de texto usando la variable */
+  font-family: Arial, sans-serif; /* Fuente principal con un fallback genérico */
+  padding-top: 70px; /* Espacio superior, probablemente para una barra de navegación fija */
+  /* Considera usar `box-sizing: border-box;` globalmente para un manejo más intuitivo de anchos y paddings:
+     html { box-sizing: border-box; }
+     *, *::before, *::after { box-sizing: inherit; }
+  */
+}
+
+ul {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  li {
+    list-style: none;
+    a {
+      position: relative;
+      display: block;
+      text-transform: uppercase;
+      margin: 20px 0;
+      padding: 10px 20px;
+      text-decoration: none;
+      color: #262626;
+      font-family: sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      transition: .5s;
+      z-index: 1;
+      &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-top: 2px solid #262626;
+        border-bottom: 2px solid #262626;
+        transform: scaleY(2);
+        opacity: 0;
+        transition: .3s;
+      }
+      &:after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #9e9e9e;
+        transform: scale(0);
+        opacity: 0;
+        transition: .3s;
+        z-index: -1;
+      }
+      &:hover {
+        color: #fff;
+        &:before {
+          transform: scaleY(1);
+          opacity: 1;
+        }
+        &:after {
+          transform: scaleY(1);
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
+
+/* Contenedores genéricos */
+.container,
+.container-desarrollo,
+.container-about-me,
+.container-portafolio {
+  padding: 0.5rem; /* Espaciado interno */
+  text-align: center;
+  margin-bottom: 0.8em /* Centra el contenido de texto e inline-block */
+  /* Si necesitas que estos contenedores tengan un ancho máximo y se centren:
+     max-width: 1200px; (o el valor que prefieras)
+     margin-left: auto;
+     margin-right: auto;
+  */
+}
+
+.section-desarrollo{
+  margin-bottom: -3.2em;
+}
+
+.section-portafolio{
+  margin-top: -7.5em;
+  margin-bottom: 3em;
+}
+
+.btn-download {
+  margin: 3em;
+}
+
+/* ================================
+ 3. Componentes Específicos
+ =================================== */
+
+/* --------------------------------
+ Modal
+ -------------------------------- */
+.modal-content {
+  color: var(--modal-text-color); /* Color de texto para el contenido del modal. CORREGIDO: Usando variable (definida arriba) */
+  /* Originalmente: color: #000; /* negro */
+  /* Si el fondo del modal también cambia con el tema, asegúrate de que este color siga siendo legible.
+     Si el fondo del modal es siempre claro, #000 está bien, pero usar una variable es más flexible. */
+}
+
+/* --------------------------------
+ Tarjetas "About Me"
+ -------------------------------- */
+.container-scroll-about-me {
+  /* CORRECCIÓN: Cambiado `width` fijo a `max-width` y `width: 100%` para responsividad. */
+  max-width: 1200px; /* Ancho máximo del contenedor de tarjetas */
+  width: 100%; /* Ocupa el ancho disponible hasta el `max-width` */
+  display: grid; /* Habilita CSS Grid Layout */
+  /* Crea columnas que se ajustan automáticamente (auto-fit).
+     Cada columna tendrá un mínimo de 350px y tomará una fracción (1fr) del espacio disponible. */
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-gap: 15px; /* Espacio entre las tarjetas */
+  margin: 0 auto; /* Centra el contenedor en la página */
+  padding: 1rem; /* Espaciado interno (ya estaba en .container, podría ser redundante si se usa .container también) */
+  text-align: center; /* Centra el texto dentro del contenedor (ya estaba en .container) */
+}
+
+.card {
+  position: relative; /* Necesario para posicionar elementos hijos (`.cara`) de forma absoluta */
+  /* CORRECCIÓN: `width: 450px;` cambiado a `width: 100%;` para que la tarjeta ocupe el ancho de su celda en el grid.
+     La `minmax(350px, 1fr)` en `.container-about-me` controla el tamaño de la celda. */
+  width: 100%;
+  height: 300px; /* Altura fija para las tarjetas */
+  margin: 0 auto; /* Centra la tarjeta si su celda de grid es más ancha (generalmente no es necesario con width: 100%) */
+  background: var(--card-bg-light); /* Fondo de la tarjeta. SUGERENCIA: Usar variable si cambia con el tema */
+  /* Originalmente: background: #fff; */
+  box-shadow: 0 15px 60px rgba(0, 0, 0, 0.5); /* Sombra para dar profundidad */
+  border-radius: 15px; /* Bordes redondeados */
+  overflow: hidden; /* Asegura que el contenido que sobresalga (como :before de cara2) no rompa el border-radius de la tarjeta. */
+}
+
+.card .cara {
+  position: absolute; /* Posicionamiento absoluto respecto al `.card` */
+  bottom: 0;
+  left: 0;
+  width: 100%; /* Ocupa todo el ancho del `.card` */
+  height: 100%; /* Ocupa toda la altura del `.card` */
+  display: flex; /* Para centrar contenido interno */
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
+}
+
+.card .cara.cara1 { /* Cara frontal de la tarjeta */
+  box-sizing: border-box; /* El padding se incluye dentro del width/height */
+  padding: 20px; /* Espaciado interno */
+  /* Esta cara es visible por defecto. */
+}
+
+.card .cara.cara1 h2 {
+  margin: 0; /* Resetea margen del h2 */
+  padding: 0; /* Resetea padding del h2 */
+}
+
+.card .cara.cara1 .content {
+  font-size: 1em;
+  margin: 0;
+  padding: 0 0 1em 0; /* Espacio inferior después del contenido */
+  font-weight: 500;
+}
+
+.card .cara.cara2 { /* Cara trasera (o superior en este efecto) de la tarjeta */
+  /* background: #111;  Este background es sobrescrito por los :nth-child, así que puede ser innecesario
+                       o servir como fallback si los :nth-child no aplican. */
+  transition: height 0.5s, border-radius 0.5s; /* Transición suave para la altura y el radio de borde al hacer hover */
+  /* El `border-radius` inicial de cara2 debe coincidir con el de `.card` si cubre toda la tarjeta
+     y luego cambia al hacer hover. Los :nth-child ya lo están aplicando. */
+}
+
+/* Estilos específicos para las `cara2` de diferentes tarjetas usando gradientes */
+.card:nth-child(1) .cara.cara2 {
+  background: linear-gradient(45deg, #EBE4E4, #E0DE99);
+  border-radius: 15px; /* Radio inicial que coincide con la tarjeta padre */
+}
+
+.card:nth-child(2) .cara.cara2 {
+  background: linear-gradient(45deg, #171111, #E3E3C8);
+  border-radius: 15px;
+}
+
+.card:nth-child(3) .cara.cara2 {
+  background: linear-gradient(45deg, #e2dedb, #171111);
+  border-radius: 15px;
+}
+
+/* Efecto al pasar el ratón sobre la tarjeta */
+.card:hover .cara.cara2 {
+  height: 60px; /* La `cara2` se encoge para mostrar la `cara1` */
+  border-radius: 0 0 15px 15px; /* Ajusta el radio para las esquinas inferiores */
+}
+
+/* Elemento decorativo en la `cara2` */
+.card .cara.cara2::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1); /* Un brillo semitransparente */
+  border-radius: 15px 0 0 15px; /* Radio solo en las esquinas izquierdas, para que coincida con el `border-radius` de `cara2` */
+                                 /* Si cara2 no tiene border-radius inicial, este puede quedar extraño.
+                                    Con los `border-radius: 15px` en los nth-child, esto debería verse bien. */
+}
+
+/* Título dentro de la `cara2` */
+/* CORRECCIÓN: Selector corregido de `.card .cara .cara2 h2` a `.card .cara.cara2 h2` */
+.card .cara.cara2 h2 {
+  margin: 0;
+  padding: 0;
+  font-size: 4em; /* Tamaño grande inicial */
+  color: #111; /* Color de texto (hardcodeado, considerar variable si cambia con el tema) */
+  transition: font-size 0.5s; /* Transición suave para el tamaño de fuente */
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra de texto */
+}
+
+.card:hover .cara.cara2 h2 {
+  font-size: 2.5em; /* Tamaño de fuente más pequeño al hacer hover */
+}
+
+/* --------------------------------
+ Efectos de Oscurecimiento de Imágenes
+ -------------------------------- */
+.img-hover {
+  filter: brightness(30%); /* Imagen inicialmente oscurecida */
+  transition: filter 0.3s ease, transform 0.1s ease; /* Transiciones suaves */
+  cursor: pointer; /* Indica que es interactivo */
+  width: 70%;
+  height: 70%;
+  object-fit: cover; 
+}
+
+.img-hover:hover {
+  filter: brightness(100%); /* Imagen con brillo normal al pasar el ratón */
+}
+
+.img-hover:active { /* Efecto al hacer clic */
+  transform: scale(0.97); /* Ligeramente más pequeña */
+}
+
+/* --------------------------------
+ Animación "Muñeco" y Luna ("Scroll About Me")
+ -------------------------------- */
+#muneco-animacion { /* Contenedor de la animación */
+  position: relative; /* Para posicionar elementos hijos de forma absoluta */
+  width: 100%; /* Ocupa todo el ancho disponible */
+  aspect-ratio: 1280 / 853; /* Mantiene la proporción de la imagen de fondo */
+  overflow: hidden; /* Evita que la luna se salga si se mueve mucho */
+  margin-bottom: 2rem; /* Espacio inferior */
+}
+
+/* Superposición para efecto hover sobre la animación del muñeco */
+#muneco-animacion::after {
+  content: "";
+  position: absolute;
+  inset: 0; /* Cubre todo el contenedor (top, right, bottom, left = 0) */
+  background-color: rgba(0, 0, 0, 0); /* Inicialmente transparente */
+  transition: background-color 0.5s ease-in-out; /* Transición suave del color de fondo */
+  z-index: 2; /* Se asegura que esté por encima de #muneco pero debajo de #luna */
+  pointer-events: none; /* Permite que los eventos de ratón pasen a elementos inferiores (si los hubiera interactivos) */
+}
+
+#muneco-animacion:hover::after {
+  background-color: rgba(0, 0, 0, 0.4); /* Oscurece la imagen al pasar el ratón */
+}
+
+#muneco { /* La imagen principal de la animación */
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Asegura que la imagen cubra el contenedor manteniendo su aspect ratio */
+  display: block; /* Elimina espacio extra debajo de la imagen si es inline */
+  border: 2px solid var(--text-color); /* Borde. SUGERENCIA: Usar variable de color de texto o una específica para bordes. */
+  /* Originalmente: border: 2px solid black; */
+}
+
+#luna { /* Elemento animado de la luna */
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 80px; /* Ancho inicial de la luna */
+  z-index: 3; /* Por encima del overlay y la imagen del muñeco */
+  animation: flotarLuna 3s ease-in-out infinite; /* Aplica la animación de flotar */
+}
+
+@keyframes flotarLuna { /* Animación para la luna */
+  0%, 100% {
+      transform: translateY(0); /* Posición inicial y final */
+  }
+  50% {
+      transform: translateY(-10px); /* Sube 10px en el punto medio */
+  }
+}
+
+/* --------------------------------
+ Títulos con Subrayado Hover
+ --------------------------------
+ NOTA: `.hover-underline` y `.titulo-tipo-letra` tienen estilos idénticos.
+ Si sirven para propósitos diferentes pero se ven igual, está bien.
+ Si son lo mismo, considera unificar las clases.
+*/
+.hover-underline,
+.titulo-tipo-letra {
+  font-size: 1.5rem; /* Tamaño de fuente inicial */
+  color: var(--text-color); /* Color de texto usando variable */
+  position: relative; /* Necesario para posicionar los pseudo-elementos ::before y ::after */
+  display: inline-block; /* Para que se comporte como bloque pero fluya con el texto */
+  /* `padding-bottom: 5px;` podría ser útil si el subrayado se superpone con el texto. */
+}
+
+.titulo-tipo-letra-h1 {
+  font-size: 3rem; /* Tamaño de fuente inicial */
+  color: var(--text-color); /* Color de texto usando variable */
+  position: relative; /* Necesario para posicionar los pseudo-elementos ::before y ::after */
+  display: inline-block; /* Para que se comporte como bloque pero fluya con el texto */
+  /* `padding-bottom: 5px;` podría ser útil si el subrayado se superpone con el texto. */
+}
+
+/* Pseudo-elementos para crear el efecto de subrayado animado */
+.hover-underline::after,
+.hover-underline::before,
+.titulo-tipo-letra::after,
+.titulo-tipo-letra::before,
+.titulo-tipo-letra-h1::after,
+.titulo-tipo-letra-h1::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px; /* Grosor del subrayado */
+  /* Color del subrayado (hardcodeado). Considerar variables si necesita cambiar con el tema. */
+  background: linear-gradient(to right, #c1c1c1, #505050);
+  left: 0;
+  transform: scaleX(0); /* Inicialmente invisible (escalado a 0 en el eje X) */
+  transition: transform 0.7s ease-out; /* Transición suave para la animación */
+}
+
+.hover-underline::after,
+.titulo-tipo-letra::after,
+.titulo-tipo-letra-h1::after {
+  bottom: -5px; /* Posiciona la línea inferior debajo del texto */
+  transform-origin: right; /* La animación de crecimiento empieza desde la derecha */
+}
+
+.hover-underline::before,
+.titulo-tipo-letra::before,
+.titulo-tipo-letra-h1::before {
+  top: -5px; /* Posiciona la línea superior encima del texto */
+  transform-origin: left; /* La animación de crecimiento empieza desde la izquierda */
+}
+
+/* Al pasar el ratón, las líneas se expanden */
+.hover-underline:hover::after,
+.hover-underline:hover::before,
+.titulo-tipo-letra:hover::after,
+.titulo-tipo-letra:hover::before,
+.titulo-tipo-letra-h1:hover::after,
+.titulo-tipo-letra-h1:hover:before {
+  transform: scaleX(1); /* Escala a 100% del ancho */
+}
+
+/* --------------------------------
+ Iconos de Redes Sociales
+ -------------------------------- */
+.icon-cover-social-network {
+  color: var(--highlight-color); /* Color del icono usando variable */
+  font-size: 2rem; /* Tamaño del icono */
+  transition: color 0.3s ease; /* Transición suave para el color */
+}
+
+.icon-cover-social-network:hover {
+  color: var(--highlight-hover); /* Cambia de color al pasar el ratón, usando variable */
+}
+
+/* --------------------------------
+ Destreza: Cubo Giratorio
+ -------------------------------- */
+.contenedor-destrezas { /* Contenedor para centrar el cubo */
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
+  margin-top: 2rem; /* Espacio superior */
+  /* perspective: 800px;  Añadir perspectiva aquí puede mejorar el efecto 3D del cubo hijo. */
+}
+
+.box-card { /* El cubo en sí */
+  width: 100px; /* Ancho inicial del cubo */
+  height: 100px; /* Alto inicial del cubo */
+  position: relative; /* Para que las caras se posicionen respecto a él */
+  transform-style: preserve-3d; /* Permite que los hijos transformados en 3D mantengan su posición 3D */
+  transition: transform 1s ease; /* Transición para cualquier transformación directa (no usada actualmente) */
+  cursor: pointer; /* Indica que es interactivo */
+  /* Si la perspectiva se define en el padre, no es necesaria aquí.
+     Si no, `perspective: 800px;` aquí también podría funcionar pero es mejor en el padre. */
+}
+
+.box-card:hover {
+  animation: rotate3d 8s infinite linear; /* Aplica la animación de rotación al pasar el ratón */
+}
+
+.face { /* Estilo común para todas las caras del cubo */
+  position: absolute; /* Posicionamiento absoluto dentro del .box-card */
+  width: 100%;
+  height: 100%;
+  background: var(--box-bg); /* Fondo de la cara usando variable */
+  border: 2px solid var(--box-border); /* Borde de la cara usando variable */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  border-radius: 8px; /* Bordes redondeados para las caras */
+  overflow: hidden; /* Si el contenido de una cara es más grande que la cara */
+  backface-visibility: visible; /* Define si la cara posterior de un elemento es visible cuando está girada.
+                                   'hidden' es más común para evitar ver el "reverso" del contenido,
+                                   pero 'visible' puede ser intencional. Para un cubo sólido,
+                                   otras caras suelen ocultar las caras posteriores de todas formas. */
+  /* color: var(--text-color); Podrías añadir un color de texto para el contenido de las caras */
+}
+
+/* Posicionamiento y rotación de cada cara para formar el cubo */
+/* El valor de traslación (50px) es la mitad del tamaño del cubo (100px) */
+.front  { transform: translateZ(50px); }
+.back   { transform: translateZ(-50px) rotateY(180deg); } /* Girada para que el texto no esté invertido */
+.right  { transform: translateX(50px) rotateY(90deg); }
+.left   { transform: translateX(-50px) rotateY(-90deg); }
+.top    { transform: translateY(-50px) rotateX(90deg); }
+.bottom { transform: translateY(50px) rotateX(-90deg); }
+
+@keyframes rotate3d { /* Animación de rotación del cubo */
+  0%   { transform: rotateX(0deg) rotateY(0deg); }
+  25%  { transform: rotateX(90deg) rotateY(90deg); }
+  50%  { transform: rotateX(180deg) rotateY(180deg); }
+  75%  { transform: rotateX(270deg) rotateY(270deg); }
+  100% { transform: rotateX(360deg) rotateY(360deg); }
+}
+
+/* ================================
+ 4. Media Queries (Vista de escritorio / pantallas más grandes)
+ ===================================
+ Ajustes para pantallas con un ancho mínimo de 768px.
+*/
+@media (min-width: 768px) {
+  .container {
+      padding: 3rem; /* Aumenta el padding del contenedor general */
+  }
+
+  .hover-underline {
+      font-size: 2rem; /* Aumenta el tamaño de fuente para estos títulos */
+  }
+  /* SUGERENCIA: Si `.titulo-tipo-letra` también debe cambiar de tamaño, añádelo aquí:
+  .hover-underline,
+  .titulo-tipo-letra {
+      font-size: 2rem;
+  }
+  */
+
+  #luna {
+      width: 100px; /* Aumenta el tamaño de la luna */
+  }
+
+  /* Ajustes para el cubo en pantallas más grandes */
+  .box-card {
+      width: 120px; /* Aumenta el tamaño del cubo */
+      height: 120px;
+  }
+
+  /* Es CRUCIAL actualizar las traslaciones de las caras si el tamaño del cubo cambia.
+     Nuevo valor de traslación = 120px / 2 = 60px. */
+  .front  { transform: translateZ(60px); }
+  .back   { transform: translateZ(-60px) rotateY(180deg); }
+  .right  { transform: translateX(60px) rotateY(90deg); }
+  .left   { transform: translateX(-60px) rotateY(-90deg); }
+  .top    { transform: translateY(-60px) rotateX(90deg); }
+  .bottom { transform: translateY(60px) rotateX(-90deg); }
+}
+
+
+/* ================================
+ 5. Explosión Portafolio proceso
+ ===================================
+ Ajustes para pantallas con un ancho mínimo de 768px.
+*/
+
+/* .particle-deconstruct-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #000;
+}
+
+.particle-deconstruct-element {
+  width: 500px;
+  height: 300px;
+  background: #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.particle-deconstruct-element h2 {
+  color: #0ff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 2rem;
+  position: relative;
+  z-index: 2;
+  transition: all 0.5s ease;
+}
+
+.particle-deconstruct-element::before,
+.particle-deconstruct-element::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-radial-gradient(
+    circle at center, 
+    #0ff 1px, 
+    transparent 2px, 
+    transparent 50px
+  );
+  opacity: 0;
+  transition: all 0.5s ease;
+}
+
+.particle-deconstruct-element:hover h2 {
+  transform: scale(1.5) rotate(360deg);
+  opacity: 0;
+}
+
+.particle-deconstruct-element:hover::before {
+  transform: scale(2) rotate(45deg);
+  opacity: 0.3;
+}
+
+.particle-deconstruct-element:hover::after {
+  transform: scale(2) rotate(-45deg);
+  opacity: 0.3;
+} */
+
+.swing {
+  color: var(--swingColor);
+  border: 1px solid var(--swingBorderColor);
+  
+}
+.swing:hover{
+  animation-name: swing;
+      -webkit-animation-name: swing;
+      -moz-animation-name: swing;
+  animation-duration: 1s;
+      -webkit-animation-duration: 1s;
+      -moz-animation-duration: 1s;
+}
+
+  @keyframes swing {
+      20% {transform: rotate3d(0, 0, 1, 15deg);}
+      40% {transform: rotate3d(0, 0, 1, -10deg);}
+      60% {transform: rotate3d(0, 0, 1, 5deg);}
+      80% {transform: rotate3d(0, 0, 1, -5deg);}
+      to  {transform: rotate3d(0, 0, 1, 0deg);}
+  }
+
+.wave-container {
+  margin-bottom: 3em;
+}
+.wave-text span {
+  display: inline-block;
+  font-size: 3rem;
+  animation: wave 2s ease-in-out infinite;
+}
+
+.wave-text span:nth-child(1) {
+  animation-delay: 0s;
+}
+.wave-text span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.wave-text span:nth-child(3) {
+  content: ' ';
+  animation-delay: 0.4s;
+}
+.wave-text span:nth-child(4) {
+  animation-delay: 0.6s;
+}
+.wave-text span:nth-child(5) {
+  animation-delay: 0.8s;
+}
+.wave-text span:nth-child(6) {
+  animation-delay: 1s;
+}
+.wave-text span:nth-child(7) {
+  animation-delay: 1.2s;
+}
+.wave-text span:nth-child(8) {
+  animation-delay: 1.4s;
+}
+.wave-text span:nth-child(9) {
+  animation-delay: 1.6s;
+}
+.wave-text span:nth-child(10) {
+  animation-delay: 1.8s;
+}
+.wave-text span:nth-child(11) {
+  animation-delay: 2s;
+}
+.wave-text span:nth-child(12) {
+  animation-delay: 2.2s;
+}
+.wave-text span:nth-child(13) {
+  animation-delay: 2.4s;
+}
+.wave-text span:nth-child(14) {
+  animation-delay: 2.6s;
+}
+
+@keyframes wave {
+  0%, 100% {
+      transform: translateY(0);
+  }
+  50% {
+      transform: translateY(-20px);
+  }
+}
+
+@import url(https://fonts.googleapis.com/css?family=Anonymous+Pro);
+
+/* Cursor */
+.cursor{
+    position: relative;
+    width: 24em;
+    margin: 0 auto;
+    border-right: 2px solid rgba(255,255,255,.75);
+    font-size: 30px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    transform: translateY(-50%);    
+}
+/* Animation */
+.typewriter-animation {
+  animation: 
+    typewriter 5s steps(50) 1s 1 normal both, 
+    blinkingCursor 500ms steps(50) infinite normal;
+}
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+@keyframes blinkingCursor{
+  from { border-right-color: rgba(255,255,255,.75); }
+  to { border-right-color: transparent; }
+}
+
+.espaciado-pie {
+  background: white;
+  padding: 2rem;
+  background-color: #3498db;
+  color: white;
+  text-align: center;
+}
+
+.copyright-text {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
